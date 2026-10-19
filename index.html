@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي عكس الرقم خطوة بخطوة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        .code-line { transition: background-color 0.2s ease; }
+        .highlight { background-color: rgba(59, 130, 246, 0.25); border-right: 4px solid #3b82f6; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Title Banner -->
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-blue-400">محاكي عكس الرقم (C++ Reverse Visualizer)</h1>
+            <p class="text-slate-400 text-sm mt-2">تتبع حركة المتغيرات داخل حلقة `while` خطوة بخطوة للفهم الكامل</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Left Column: Code View -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl space-y-4">
+                <h2 class="text-lg font-bold text-emerald-400 border-b border-slate-700 pb-2">كود الدالة `cal()` في C++</h2>
+                <div class="font-mono text-sm bg-slate-950 p-4 rounded-xl text-slate-300 leading-relaxed overflow-x-auto" id="codeContainer">
+                    <div id="line1" class="code-line px-2 py-1 rounded">void reverse::cal() {</div>
+                    <div id="line2" class="code-line px-2 py-1 rounded pl-4">    n1 = no;</div>
+                    <div id="line3" class="code-line px-2 py-1 rounded pl-4">    r = 0;</div>
+                    <div id="line4" class="code-line px-2 py-1 rounded pl-4">    while (no > 0) {</div>
+                    <div id="line5" class="code-line px-2 py-1 rounded pl-8">        d = no % 10;        <span class="text-slate-500">// استخراج المقتطع</span></div>
+                    <div id="line6" class="code-line px-2 py-1 rounded pl-8">        r = (r * 10) + d;   <span class="text-slate-500">// إضافة المقتطع للناتج</span></div>
+                    <div id="line7" class="code-line px-2 py-1 rounded pl-8">        no /= 10;           <span class="text-slate-500">// حذف الخانة الأخيرة</span></div>
+                    <div id="line8" class="code-line px-2 py-1 rounded pl-4">    }</div>
+                    <div id="line9" class="code-line px-2 py-1 rounded">}</div>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Panel & Variables -->
+            <div class="space-y-6">
+                <!-- Inputs & Controls -->
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl space-y-4">
+                    <label class="block text-sm font-semibold text-slate-300">أدخل رقم لتجربته:</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="numInput" value="123" class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 font-mono text-lg" placeholder="مثال: 123">
+                        <button onclick="startSimulation()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded-xl transition shadow-lg shrink-0">ابدأ</button>
+                    </div>
+
+                    <!-- Step Controls -->
+                    <div class="flex gap-3 pt-2">
+                        <button id="nextBtn" onclick="nextStep()" disabled class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold py-2.5 rounded-xl transition shadow-lg">الخطوة التالية ➔</button>
+                        <button id="resetBtn" onclick="resetSimulation()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold px-4 py-2.5 rounded-xl transition">إعادة</button>
+                    </div>
+                </div>
+
+                <!-- Live Variables Monitor -->
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl space-y-4">
+                    <h2 class="text-lg font-bold text-amber-400 border-b border-slate-700 pb-2">شاشة قيم المتغيرات الآنية</h2>
+                    <div class="grid grid-cols-2 gap-4 text-center font-mono">
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700">
+                            <span class="block text-xs text-slate-400 font-sans">الرقم المتبقي (no)</span>
+                            <span id="varNo" class="text-xl font-bold text-blue-400">0</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700">
+                            <span class="block text-xs text-slate-400 font-sans">الرقم المقتطع (d = no % 10)</span>
+                            <span id="varD" class="text-xl font-bold text-purple-400">0</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700">
+                            <span class="block text-xs text-slate-400 font-sans">الناتج المقلوب (r)</span>
+                            <span id="varR" class="text-xl font-bold text-emerald-400">0</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700">
+                            <span class="block text-xs text-slate-400 font-sans">الرقم الأصلي المحفوظ (n1)</span>
+                            <span id="varN1" class="text-xl font-bold text-slate-300">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Step Explanation Box -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-sm text-slate-300 leading-relaxed min-h-[70px] flex items-center justify-center text-center" id="explanationText">
+                        اضغط على "ابدأ" لبدء الشرح والتتبع.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let steps = [];
+        let currentStepIndex = -1;
+
+        function highlightLine(lineNumber) {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('highlight'));
+            if (lineNumber) {
+                const line = document.getElementById(`line${lineNumber}`);
+                if (line) line.classList.add('highlight');
+            }
+        }
+
+        function startSimulation() {
+            const inputVal = parseInt(document.getElementById('numInput').value);
+            if (isNaN(inputVal) || inputVal <= 0) {
+                alert('الرجاء إدخال رقم موجب أكبر من الصفر');
+                return;
+            }
+
+            // Generate execution steps array
+            steps = [];
+            let no = inputVal;
+            let n1 = no;
+            let r = 0;
+            let d = 0;
+
+            // Initialization steps
+            steps.push({ line: 2, no, d, r, n1, text: `تخزين الرقم الأصلي (${no}) في المتغير n1 لتذكره بالنهاية.` });
+            steps.push({ line: 3, no, d, r, n1, text: `تصفير الناتج r = 0 تجهيزاً للبناء.` });
+
+            while (no > 0) {
+                steps.push({ line: 4, no, d, r, n1, text: `فحص الشرط: هل no (${no}) أكبر من 0؟ نعم، استمر بداخل الحلقة.` });
+                d = no % 10;
+                steps.push({ line: 5, no, d, r, n1, text: `أخذ باقي القسمة: d = ${no} % 10 = ${d} (هذا هو أحدث رقم من اليمين).` });
+                r = (r * 10) + d;
+                steps.push({ line: 6, no, d, r, n1, text: `إضافة الخانة للناتج: r = (القيمة القديمة * 10) + ${d} = ${r}` });
+                no = Math.floor(no / 10);
+                steps.push({ line: 7, no, d, r, n1, text: `حذف الرقم المفرد: no = no / 10 = ${no} (تخلصنا من الخانة الأخيرة).` });
+            }
+
+            steps.push({ line: 4, no, d, r, n1, text: `فحص الشرط: هل no (${no}) أكبر من 0؟ لا! تتوقف الحلقة الآن.` });
+            steps.push({ line: 9, no, d, r, n1, text: `انتهت العملية بنجاح! الناتج المقلوب لـ (${n1}) هو (${r}).` });
+
+            currentStepIndex = -1;
+            document.getElementById('nextBtn').disabled = false;
+            nextStep();
+        }
+
+        function nextStep() {
+            if (currentStepIndex < steps.length - 1) {
+                currentStepIndex++;
+                const step = steps[currentStepIndex];
+
+                // Update UI Variables
+                document.getElementById('varNo').innerText = step.no;
+                document.getElementById('varD').innerText = step.d;
+                document.getElementById('varR').innerText = step.r;
+                document.getElementById('varN1').innerText = step.n1;
+
+                // Update Explanation & Code Highlight
+                document.getElementById('explanationText').innerText = step.text;
+                highlightLine(step.line);
+
+                if (currentStepIndex === steps.length - 1) {
+                    document.getElementById('nextBtn').disabled = true;
+                }
+            }
+        }
+
+        function resetSimulation() {
+            currentStepIndex = -1;
+            steps = [];
+            highlightLine(null);
+            document.getElementById('varNo').innerText = '0';
+            document.getElementById('varD').innerText = '0';
+            document.getElementById('varR').innerText = '0';
+            document.getElementById('varN1').innerText = '0';
+            document.getElementById('explanationText').innerText = 'اضغط على "ابدأ" لبدء الشرح والتتبع.';
+            document.getElementById('nextBtn').disabled = true;
+        }
+    </script>
+</body>
+</html>
